@@ -1,6 +1,7 @@
 # Victor Homem Heck · portfolio
 
-One static page (`index.html` + `style.css` + `site.js`), no build step. Hosted on Hostinger (Apache/LiteSpeed).
+One static page (`index.html` + `style.css` + `site.js`), no build step. Lives at https://shogosoftware.com.br, hosted on
+Hostinger (Apache/LiteSpeed).
 
 | File | What |
 | --- | --- |
@@ -26,8 +27,8 @@ node --test
 2. Upload to `public_html`: `index.html`, `404.html`, `style.css`, `site.js`, `favicon.svg`, `og.png`, `robots.txt`,
    `sitemap.xml`, `.htaccess` and the `fonts/` folder. Not the rest (`tools/`, `.github/`, tests, README).
 3. Turn on the free SSL for the domain and `www`.
-4. Check: `curl -I https://<domain>/` (200, `content-security-policy`), `curl -I http://www.<domain>/` (301 to
-   `https://<domain>/`), `curl -I https://<domain>/nope` (404).
+4. Check: `curl -I https://shogosoftware.com.br/` (200, `content-security-policy`), `curl -I http://www.shogosoftware.com.br/` (301 to
+   `https://shogosoftware.com.br/`), `curl -I https://shogosoftware.com.br/nope` (404).
 5. Share the link once in a LinkedIn draft (or opengraph.xyz) to see the preview card.
 
 ## Rebuild the preview image
