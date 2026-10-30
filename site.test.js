@@ -69,3 +69,15 @@ test('the site can be indexed', () => {
   assert.doesNotMatch(read('.htaccess'), /X-Robots-Tag/);
   assert.match(read('robots.txt'), /Allow: \//);
 });
+
+test('the build has exactly the files to upload, nothing from the repo', () => {
+  const os = require('node:os');
+  const { build } = require('./build.js');
+  const out = build(__dirname, fs.mkdtempSync(path.join(os.tmpdir(), 'portfolio-')));
+  const list = (dir, base = '') => fs.readdirSync(dir, { withFileTypes: true })
+    .flatMap((e) => e.isDirectory() ? list(path.join(dir, e.name), base + e.name + '/') : [base + e.name]);
+  const files = list(out).sort();
+  assert.deepEqual(files, ['.htaccess', '404.html', 'favicon.svg', 'fonts/bricolage-grotesque.woff2', 'fonts/ibm-plex-sans.woff2',
+    'fonts/jetbrains-mono.woff2', 'index.html', 'og.png', 'robots.txt', 'site.js', 'sitemap.xml', 'style.css']);
+  fs.rmSync(out, { recursive: true, force: true });
+});

@@ -21,3 +21,16 @@ jobs:
           node-version: '22'
       - name: Tests
         run: node --test
+
+      - name: Build
+        run: node build.js
+
+      # The same files as dist/, ready to upload to Hostinger's public_html.
+      - name: Upload site
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-site-${{ github.sha }}
+          path: dist/
+          include-hidden-files: true # .htaccess
+          if-no-files-found: error
+          retention-days: 90

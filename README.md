@@ -1,6 +1,6 @@
 # Victor Homem Heck · portfolio
 
-One static page (`index.html` + `style.css` + `site.js`), no build step. Lives at https://shogosoftware.com.br, hosted on
+One static page (`index.html` + `style.css` + `site.js`); the "build" only copies the files to upload. Lives at https://shogosoftware.com.br, hosted on
 Hostinger (Apache/LiteSpeed).
 
 | File | What |
@@ -13,7 +13,8 @@ Hostinger (Apache/LiteSpeed).
 | `favicon.svg`, `og.png` | Icon and the 1200×630 link preview. `og.png` is rendered from `tools/og.html`. |
 | `robots.txt`, `sitemap.xml` | The site is meant to be indexed. |
 | `.htaccess` | HTTPS + bare domain redirect, strict CSP (everything from this domain), security headers, caching, 404. |
-| `site.test.js` | `node --test`: copy button, every linked file exists, nothing the CSP would block, valid structured data, no domain placeholder left. |
+| `build.js` | Copies the files to upload into `dist/`. |
+| `site.test.js` | `node --test`: copy button, every linked file exists, nothing the CSP would block, valid structured data, no domain placeholder left, the build has exactly the files to upload. |
 
 ## Test
 
@@ -21,11 +22,22 @@ Hostinger (Apache/LiteSpeed).
 node --test
 ```
 
+## Build
+
+```bash
+node build.js        # copies the site files into dist/
+cd dist && tar -a -c -f ../portfolio-hostinger.zip .htaccess 404.html favicon.svg fonts index.html og.png robots.txt site.js sitemap.xml style.css
+```
+
+Use Windows' `tar` (or any zip tool that writes `/` paths), not PowerShell's `Compress-Archive`: its backslash paths can
+extract as files named `fonts\x.woff2`. CI also keeps `dist/` as the `portfolio-site-<sha>` artifact of each run.
+
 ## Deploy (Hostinger)
 
-1. hPanel › add a website for the domain as **"Empty PHP/HTML website"**.
-2. Upload to `public_html`: `index.html`, `404.html`, `style.css`, `site.js`, `favicon.svg`, `og.png`, `robots.txt`,
-   `sitemap.xml`, `.htaccess` and the `fonts/` folder. Not the rest (`tools/`, `.github/`, tests, README).
+1. hPanel › the website for the domain must be a plain **"Empty PHP/HTML website"** (a Node.js/Next.js app on the same
+   domain would keep serving instead of these files).
+2. File Manager › `public_html` › upload `portfolio-hostinger.zip` › right-click › **Extract** into `public_html` (the files
+   at its root, not in a subfolder) › delete the zip. Turn on "show hidden files" to see `.htaccess`.
 3. Turn on the free SSL for the domain and `www`.
 4. Check: `curl -I https://shogosoftware.com.br/` (200, `content-security-policy`), `curl -I http://www.shogosoftware.com.br/` (301 to
    `https://shogosoftware.com.br/`), `curl -I https://shogosoftware.com.br/nope` (404).
