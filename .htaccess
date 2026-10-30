@@ -1,0 +1,38 @@
+# Victor Homem Heck · portfolio on Hostinger (Apache/LiteSpeed).
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  # HTTPS and the bare domain only.
+  RewriteCond %{HTTPS} off [OR]
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteRule ^ https://__DOMAIN__%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Repo-only files, in case they get uploaded by mistake.
+<FilesMatch "(\.test\.js|\.md|\.yml)$">
+  Require all denied
+</FilesMatch>
+RedirectMatch 404 ^/(tools|\.github|\.git)(/|$)
+
+<IfModule mod_headers.c>
+  # Everything is served from this domain: no inline scripts or styles, no third parties.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  Header always set Strict-Transport-Security "max-age=31536000"
+  # Pages, styles and scripts keep their names, so browsers check for a new version each time.
+  <FilesMatch "\.(html|css|js|txt|xml)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(woff2|svg|png)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType font/woff2 .woff2
+</IfModule>
